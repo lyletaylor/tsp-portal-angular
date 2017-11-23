@@ -1,0 +1,158 @@
+
+enum TagItemStatus {
+    Active
+    Disabled
+}
+enum TaskTypeStatus {
+    Unclassified
+    Ready
+    InProgress
+    Cancelled
+    Completed
+}
+
+enum Priority {
+    Critical
+    High
+    Medium
+    Low
+    NiceToHave
+}
+
+type Area {
+    uuid: ID!
+    name: String!
+    description: String
+    status: TagItemStatus!
+
+    childDomains: [Domain] @relation(name:"APPLIES_TO", direction: IN)
+    childTopics: [Topic] @relation(name:"APPLIES_TO", direction: IN)
+}
+
+type Domain {
+    uuid: ID
+    name: String!
+    description: String
+    status: TagItemStatus!
+
+    appliesToAreas: [Area] @relation(name:"APPLIES_TO", direction: OUT)
+
+    parentDomains: [Domain] @relation(name:"CHILD_OF", direction: OUT)
+    childDomains: [Domain] @relation(name:"CHILD_OF", direction: IN)
+
+    childTopics: [Topic] @relation(name:"APPLIES_TO", direction: IN)
+}
+
+type Topic {
+    uuid: ID
+    name: String!
+    description: String
+    status: TagItemStatus!
+
+    appliesToAreas: [Area] @relation(name:"APPLIES_TO", direction: OUT)
+    appliesToDomains: [Domain] @relation(name:"APPLIES_TO", direction: OUT)
+
+    parentTopics: [Topic] @relation(name:"CHILD_OF", direction: OUT)
+    childTopics: [Topic] @relation(name:"CHILD_OF", direction: IN)
+}
+
+type GTDContext {
+    uuid: ID
+    name: String!
+    description: String
+    status: TagItemStatus!
+
+    appliesToAreas: [Area] @relation(name:"APPLIES_TO", direction: OUT)
+
+    tasks: [Task] @relation(name:"ASSIGNED_TO", direction: IN)
+}
+
+# Add people/stakeholders
+# add things that the item benefits
+interface TaskType {
+    uuid: ID
+    short_description: String!
+    status: TaskTypeStatus!
+    dueDate: String
+    notes: String
+    order: Int
+    priority: Priority
+
+    #parentProject: Project @cypher(--need to define--)
+    parent: TaskType @relation(name:"CHILD_OF", direction: OUT)
+    children: [TaskType] @relation(name:"CHILD_OF", direction: IN)
+}
+
+type Task implements TaskType {
+    uuid: ID
+    short_description: String!
+    status: TaskTypeStatus!
+    dueDate: String
+    notes: String
+    order: Int
+    priority: Priority
+
+    #parentProject: Project @cypher(--need to define--)
+    parent: TaskType @relation(name:"CHILD_OF", direction: OUT)
+    children: [TaskType] @relation(name:"CHILD_OF", direction: IN)
+
+    GTDContext: GTDContext @relation(name:"ASSIGNED_TO", direction: OUT)
+}
+
+type Project implements TaskType {
+    uuid: ID
+    short_description: String!
+    status: TaskTypeStatus!
+    dueDate: String
+    notes: String
+    order: Int
+    priority: Priority
+
+    nextAction: Task @relation(name:"NEXT_ACTION", direction: OUT)
+
+    #topLevelProject: Project @cypher(--need to define--)
+    #parentProject: Project @cypher(--need to define--)
+    parent: TaskType @relation(name:"CHILD_OF", direction: OUT)
+    children: [TaskType] @relation(name:"CHILD_OF", direction: IN)
+}
+
+type Bookmark {
+    uuid: ID
+    title: String
+    url: String!
+    iconUrl: String
+
+    topics: [Topic] @relation(name:"APPLIES_TO", direction: OUT)
+    sessions: [BrowserSession] @relation(name:"MEMBER_OF", direction: OUT)
+}
+
+type BrowserSession {
+    uuid: ID
+    name: String!
+
+    bookmarks: [Bookmark] @relation(name:"MEMBER_OF", direction: IN)
+    topics: [Topic] @relation(name:"APPLIES_TO", direction: OUT)
+}
+
+# Gives us a place to track system settings and perform queries that do not
+# work elegantly on the object types themselves
+type System {
+    uuid: ID
+    schemaVersion: Int!
+
+    # top level queries
+    topLevelTopics: [Topic] @cypher(statement: "MATCH (t:Topic) WHERE NOT (t)-[:CHILD_OF]->(:Topic) RETURN t")
+    topLevelDomains: [Domain] @cypher(statement: "MATCH (d:Domain) WHERE NOT (d)-[:CHILD_OF]->(:Domain) RETURN d")
+}
+
+schema {
+    mutation: MutationType
+}
+
+type MutationType {
+    newArea(
+        name: String!
+        description: String
+        status: TagItemStatus!
+    ) : Area @cypher(statement: "CREATE (n:Area { name:{name}, description: {description}, status: {status} }) RETURN n")
+}

@@ -1,0 +1,15 @@
+<div>
+    <div class="form-group row">
+        <label for="domainName" class="col-form-label col-sm-2">Name</label>
+        <input [(ngModel)]="domain.properties.name" name="domainName" class="form-control col-sm-4">
+    </div>
+    <div class="form-group row">
+        <label for="domainDescription" class="col-form-label col-sm-2">Description</label>
+        <input [(ngModel)]="domain.properties.description" name="domainDescription" class="form-control col-sm-8">
+    </div>
+    <div class="row button-row">
+        <button class="btn btn-secondary ml-auto" (click)="onCancel()">Cancel</button>
+        <button *ngIf="hasId()" class="btn btn-danger" (click)="onDelete()">Delete</button>
+        <button class="btn btn-primary" (click)="onSave()">Save</button>
+    </div>
+</div>

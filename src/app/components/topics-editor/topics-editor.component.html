@@ -1,0 +1,16 @@
+<div>
+    <h4 class="topics-header">Maintain Topics</h4>
+</div>
+<div class="topics-editor row h-100">
+    <div class="topic-list col-md-3">
+        <ul>
+            <li *ngFor="let topic of topics | sortObjArray:topicSort" [class.selected]="topic === selectedTopic" (click)="select(topic)">
+                {{topic.properties.name}}
+            </li>
+            <li (click)="createNew()"><i class="fa fa-plus list-add-symbol"></i>Add New</li>
+        </ul>
+    </div>
+    <div class="topic col-md-9">
+        <app-topic [topic]="getSelectedTopic()" (cancel)="onCancel()" (save)="onSave($event)" (delete)="onDelete($event)" *ngIf="selectedTopic"></app-topic>
+    </div>
+</div>

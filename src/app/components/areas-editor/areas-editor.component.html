@@ -1,0 +1,16 @@
+<div>
+    <h4 class="areas-header">Maintain Areas</h4>
+</div>
+<div class="areas-editor row h-100">
+    <div class="area-list col-md-3">
+        <ul>
+            <li *ngFor="let area of areas | sortObjArray:areaSort" [class.selected]="isSelectedArea(area)" (click)="selectArea(area)">
+                {{area.name}}
+            </li>
+            <li (click)="createNew()"><i class="fa fa-plus list-add-symbol"></i>Add New</li>
+        </ul>
+    </div>
+    <div class="area col-md-9">
+        <app-area [areaId]="selectedArea ? selectedArea.uuid : null" (cancel)=" onCancel() " (save)="onSave($event) " (delete)="onDelete($event) " *ngIf="selectedArea || createNewState "></app-area>
+    </div>
+</div>

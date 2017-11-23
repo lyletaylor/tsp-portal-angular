@@ -1,0 +1,17 @@
+<div>
+    <h4 class="domains-header">Maintain Domains</h4>
+</div>
+<div class="domains-editor row h-100">
+    <div class="domain-list col-md-3">
+        <ul>
+            <!--  | sortObjArray:'label' -->
+            <li *ngFor="let domain of domains | sortObjArray:domainSort" [class.selected]="domain === selectedDomain" (click)="select(domain)">
+                {{domain.properties.name}}
+            </li>
+            <li (click)="createNew()"><i class="fa fa-plus list-add-symbol"></i>Add New</li>
+        </ul>
+    </div>
+    <div class="domain col-md-9">
+        <app-domain [domain]="getSelectedDomain()" (cancel)="onCancel()" (save)="onSave($event)" (delete)="onDelete($event)" *ngIf="selectedDomain"></app-domain>
+    </div>
+</div>

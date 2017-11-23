@@ -1,0 +1,41 @@
+.areas-header {
+    border-bottom: 1px solid lightgray;
+    padding: .5em;
+    margin: 0;
+}
+
+.areas-editor {}
+
+.area-list {
+    padding-top: 1em;
+    /* border-right: 1px solid lightgray; */
+    background-color: #f9f9f9;
+    overflow: scroll;
+}
+
+.area {
+    padding-top: 1em;
+}
+
+.selected {
+    font-weight: bold;
+}
+
+ul {
+    padding-left: 1em;
+    list-style: none;
+}
+
+.list-add-symbol {
+    margin-right: .5em;
+}
+
+li {
+    cursor: pointer;
+    color: #444;
+}
+
+li:hover {
+    font-weight: bold;
+    color: #222;
+}
